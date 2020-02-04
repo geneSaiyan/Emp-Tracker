@@ -31,7 +31,7 @@ const trackerOptions = [
 ];
 
 // function which initiates the actions within the employee tracker
-function startTracker() {
+ startTracker = () => {
     inquirer
         .prompt({
             name: "trackerList",
@@ -48,8 +48,7 @@ function startTracker() {
 // Using a function to store the if/else statement for the user choice
 trackerAction = (choice) => {
     if(choice.trackerList === 'View all departments'){
-        console.log('Dept');
-        startTracker()
+        viewAllDepartments();
     }
     else if(choice.trackerList === 'View all roles'){
         console.log('Role');
@@ -79,4 +78,13 @@ trackerAction = (choice) => {
         console.log('Finish!');
         connection.end();
     }
+}
+
+// Function to view all of the departments
+viewAllDepartments = () => {
+    connection.query("SELECT * FROM department", function(err, results) {
+        if (err) throw err;
+        console.log(results);
+        startTracker();
+    })
 }
