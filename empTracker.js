@@ -1,9 +1,11 @@
 // Dependencies
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-const cTable = require('console.table');
+var cTable = require("console.table");
+const chalk = require('chalk');
+const trackerOptions = require('./assets/trackerOptions')
 
-// Create the connection information for the sql database
+//Create the connection information for the sql database
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -18,17 +20,6 @@ connection.connect(function (err) {
     startTracker();
 });
 
-// Placing tracker options in an array variable
-const trackerOptions = [
-    'View all departments',
-    'View all roles',
-    'View all employees',
-    'Add a department',
-    'Add a role',
-    'Add a employee',
-    'Update an employee role',
-    `I'm done`
-];
 
 // function which initiates the actions within the employee tracker
  startTracker = () => {
@@ -51,8 +42,7 @@ trackerAction = (choice) => {
         viewAllDepartments();
     }
     else if(choice.trackerList === 'View all roles'){
-        console.log('Role');
-        startTracker()
+        viewAllRoles();
     }
     else if(choice.trackerList === 'View all employees'){
         console.log('Emp');
@@ -75,16 +65,26 @@ trackerAction = (choice) => {
         startTracker()
     }
     else if(choice.trackerList === `I'm done`){
-        console.log('Finish!');
+        console.log(chalk.bgRed('Finish!'));
         connection.end();
     }
 }
 
 // Function to view all of the departments
 viewAllDepartments = () => {
-    connection.query("SELECT * FROM department", function(err, results) {
+    connection.query("SELECT * FROM emptracker_db.department", function(err, results) {
         if (err) throw err;
-        console.log(results);
+        console.log(chalk.blue(cTable.getTable('Departments View',results)));
         startTracker();
     })
 }
+
+// Function to view all of the roles
+viewAllRoles = () => {
+    connection.query("SELECT * FROM emptracker_db.role", function(err, results) {
+        if (err) throw err;
+        console.log(chalk.green(cTable.getTable('Roles View',results)));
+        startTracker();
+    })
+}
+
