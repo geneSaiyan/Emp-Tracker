@@ -3,7 +3,8 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var cTable = require("console.table");
 const chalk = require('chalk');
-const trackerOptions = require('./assets/trackerOptions')
+const trackerOptions = require('./assets/trackerOptions');
+var queries = require('./assets/queries');
 
 //Create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -19,7 +20,6 @@ connection.connect(function (err) {
     if (err) throw err;
     startTracker();
 });
-
 
 // function which initiates the actions within the employee tracker
  startTracker = () => {
@@ -45,12 +45,10 @@ trackerAction = (choice) => {
         viewAllRoles();
     }
     else if(choice.trackerList === 'View all employees'){
-        console.log('Emp');
-        startTracker()
+        viewAllEmployees();
     }
     else if(choice.trackerList === 'Add a department'){
-        console.log('Add Dept');
-        startTracker()
+       addDepartment();
     }
     else if(choice.trackerList === 'Add a role'){
         console.log('Add Role');
@@ -72,7 +70,7 @@ trackerAction = (choice) => {
 
 // Function to view all of the departments
 viewAllDepartments = () => {
-    connection.query("SELECT * FROM emptracker_db.department", function(err, results) {
+    connection.query(queries.selectAllDepts(), function(err, results) {
         if (err) throw err;
         console.log(chalk.blue(cTable.getTable('Departments View',results)));
         startTracker();
@@ -81,10 +79,40 @@ viewAllDepartments = () => {
 
 // Function to view all of the roles
 viewAllRoles = () => {
-    connection.query("SELECT * FROM emptracker_db.role", function(err, results) {
+    connection.query(queries.selectAllRoles(), function(err, results) {
         if (err) throw err;
         console.log(chalk.green(cTable.getTable('Roles View',results)));
         startTracker();
     })
 }
 
+// Function to view all employees
+viewAllEmployees = () => {
+    connection.query(queries.selectAllEmployees(), function(err, results) {
+        if (err) throw err;
+        console.log(chalk.yellowBright(cTable.getTable('Employees View',results)));
+        startTracker();
+    })
+}
+
+// Function to add a department
+addDepartment = () => {
+    inquirer
+    .prompt([
+      {
+        name: "dept",
+        type: "input",
+        message: "What is the Department name you would like to add?"
+      }
+    ])
+    .then(function(answer) {
+      connection.query(
+        queries.insertDepartment(answer.dept),
+        function(err) {
+          if (err) throw err;
+          console.log(chalk.bgGreen("Department added successfully!"));
+          startTracker();
+        }
+      );
+    });
+}
