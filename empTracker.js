@@ -73,6 +73,7 @@ viewAllDepartments = () => {
     connection.query(queries.selectAllDepts(), function(err, results) {
         if (err) throw err;
         console.log(chalk.blue(cTable.getTable('Departments View',results)));
+        console.log('-----------------------------');
         startTracker();
     })
 }
@@ -82,6 +83,7 @@ viewAllRoles = () => {
     connection.query(queries.selectAllRoles(), function(err, results) {
         if (err) throw err;
         console.log(chalk.green(cTable.getTable('Roles View',results)));
+        console.log('-----------------------------');
         startTracker();
     })
 }
@@ -91,6 +93,7 @@ viewAllEmployees = () => {
     connection.query(queries.selectAllEmployees(), function(err, results) {
         if (err) throw err;
         console.log(chalk.yellowBright(cTable.getTable('Employees View',results)));
+        console.log('-----------------------------');
         startTracker();
     })
 }
@@ -110,7 +113,8 @@ addDepartment = () => {
         queries.insertDepartment(answer.dept),
         function(err) {
           if (err) throw err;
-          console.log(chalk.bgGreen("Department added successfully!"));
+          console.log(chalk.greenBright(`${answer.dept} added successfully!`));
+          console.log('-----------------------------');
           startTracker();
         }
       );
