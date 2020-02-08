@@ -3,14 +3,14 @@ CREATE DATABASE empTracker_DB;
 
 USE empTracker_DB;
 
---Create the department table
+-- Create the department table
 CREATE TABLE department (
   id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(30) NULL,
   PRIMARY KEY (id)
 );
 
---Create the role table
+-- Create the role table
 CREATE TABLE role (
   id INT NOT NULL AUTO_INCREMENT,
   title VARCHAR(30) NULL,
@@ -20,7 +20,7 @@ CREATE TABLE role (
   PRIMARY KEY (id)
 );
 
---create the employee table
+-- Create the employee table
 CREATE TABLE employee (
   id INT NOT NULL AUTO_INCREMENT,
   first_name VARCHAR(30) NULL,
