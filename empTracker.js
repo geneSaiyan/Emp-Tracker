@@ -69,9 +69,14 @@ trackerAction = (choice) => {
 // Function to view all of the departments
 viewAllDepartments = () => {
   connection.query(queries.selectAllDepts(), function (err, results) {
+    if(results.length > 0){
     if (err) throw err;
     console.log(chalk.blue(cTable.getTable('Departments View', results)));
     console.log('-----------------------------');
+    }
+    else{
+      console.log(chalk.redBright('There are no departments in the database. Please add a department.'))
+    }
     startTracker();
   })
 }
@@ -79,9 +84,14 @@ viewAllDepartments = () => {
 // Function to view all of the roles
 viewAllRoles = () => {
   connection.query(queries.selectAllRoles(), function (err, results) {
+    if(results.length > 0){
     if (err) throw err;
     console.log(chalk.green(cTable.getTable('Roles View', results)));
     console.log('-----------------------------');
+    }
+    else{
+      console.log(chalk.redBright('There are no roles in the database. Please add a role.'))
+    }
     startTracker();
   })
 }
@@ -89,9 +99,15 @@ viewAllRoles = () => {
 // Function to view all employees
 viewAllEmployees = () => {
   connection.query(queries.selectAllEmployees(), function (err, results) {
-    if (err) throw err;
+    if(results.length > 0){
+      if (err) throw err;
     console.log(chalk.yellowBright(cTable.getTable('Employees View', results)));
     console.log('-----------------------------');
+    }
+    else{
+      console.log(chalk.redBright('There are no employees in the database. Please add an employee.'))
+    }
+    
     startTracker();
   })
 }

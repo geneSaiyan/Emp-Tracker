@@ -5,7 +5,7 @@ const trackerOptions = [
     'View all employees',
     'Add a department',
     'Add a role',
-    'Add a employee',
+    'Add an employee',
     'Update an employee role',
     `I'm done`
 ];
