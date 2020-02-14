@@ -23,7 +23,7 @@ VALUES
 ('Nikola', 'Jovanovic', 1),
 ('Ranjan', 'Biswas', 4);
 
--- Add a manager to two employee
+-- Add a manager to two employees
 UPDATE emptracker_db.employee
 SET manager_id = 7
 WHERE (id = 1 OR id = 6)

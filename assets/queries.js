@@ -1,34 +1,40 @@
 selectAllDepts = () => {
-    return 'SELECT * FROM emptracker_db.department'
+    return 'SELECT * FROM ??'
 };
 
 selectAllRoles = () => {
     return `
     SELECT 
-    A.id, 
-    A.title,
-    A.salary,
-    B.name as 'department'
+    A.??, 
+    A.??,
+    A.??,
+    B.?? as 'department'
 
-    FROM emptracker_db.role A
-    LEFT JOIN emptracker_db.department B on A.department_id = B.id
+    FROM ?? A
+    LEFT JOIN ?? B on A.?? = B.??
+    `
+}
+
+selectAllRawRoles = () => {
+    return `
+    SELECT * from ??
     `
 }
 
 selectAllEmployees = () => {
     return `
     SELECT 
-    A.id,
-    concat(A.first_name, ' ', A.last_name) as empName,
-    B.title,
-    C.name as 'department',
-    B.salary,
-    concat(D.first_name, ' ', D.last_name) as manager
+    A.??,
+    concat(A.??, ' ', A.??) as ??,
+    B.??,
+    C.?? as 'department',
+    B.??,
+    concat(D.??, ' ', D.??) as manager
    
-    FROM emptracker_db.employee A 
-    LEFT JOIN emptracker_db.role B on A.role_id = B.id
-    LEFT JOIN emptracker_db.department C on B.department_id = C.id
-    LEFT JOIN emptracker_db.employee D on A.manager_id = D.id`
+    FROM ?? A 
+    LEFT JOIN ?? B on A.?? = B.??
+    LEFT JOIN ?? C on B.?? = C.??
+    LEFT JOIN ?? D on A.manager_id = D.id`
 }
 
 insertDepartment = (dept) => {
@@ -60,5 +66,22 @@ insertEmployee = (firstName, lastName, roleTitle) => {
     `
 }
 
-module.exports = { selectAllDepts, selectAllRoles, selectAllEmployees, insertDepartment, insertRole, insertEmployee };
+updateEmpManager = (managerId, empId) => {
+    return `
+    UPDATE emptracker_db.employee
+    SET manager_id = ${managerId}
+    WHERE id = ${empId}
+    `
+};
+
+updateEmpRole = (roleTitle, empName) => {
+    return `
+    Update emptracker_db.employee 
+    SET role_id = (Select id from emptracker_db.role where title = '${roleTitle}')
+    Where CONCAT(first_name, ' ', last_name) = '${empName}'
+    `
+}
+
+module.exports = { selectAllDepts, selectAllRoles, selectAllEmployees, insertDepartment, insertRole,
+     insertEmployee, updateEmpManager, selectAllRawRoles, updateEmpRole };
 

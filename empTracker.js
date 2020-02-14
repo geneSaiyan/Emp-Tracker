@@ -53,12 +53,11 @@ trackerAction = (choice) => {
   else if (choice.trackerList === 'Add a role') {
     addRole();
   }
-  else if (choice.trackerList === 'Add a employee') {
+  else if (choice.trackerList === 'Add an employee') {
     addEmployee();
   }
   else if (choice.trackerList === 'Update an employee role') {
-    console.log('Update Role');
-    startTracker()
+    updateEmpRole();
   }
   else if (choice.trackerList === `I'm done`) {
     console.log(chalk.bgRed('Finish!'));
@@ -68,13 +67,13 @@ trackerAction = (choice) => {
 
 // Function to view all of the departments
 viewAllDepartments = () => {
-  connection.query(queries.selectAllDepts(), function (err, results) {
-    if(results.length > 0){
-    if (err) throw err;
-    console.log(chalk.blue(cTable.getTable('Departments View', results)));
-    console.log('-----------------------------');
+  connection.query(queries.selectAllDepts(), ['emptracker_db.department'], function (err, results) {
+    if (results.length > 0) {
+      if (err) throw err;
+      console.log(chalk.blue(cTable.getTable('Departments View', results)));
+      console.log('-----------------------------');
     }
-    else{
+    else {
       console.log(chalk.redBright('There are no departments in the database. Please add a department.'))
     }
     startTracker();
@@ -83,13 +82,14 @@ viewAllDepartments = () => {
 
 // Function to view all of the roles
 viewAllRoles = () => {
-  connection.query(queries.selectAllRoles(), function (err, results) {
-    if(results.length > 0){
-    if (err) throw err;
-    console.log(chalk.green(cTable.getTable('Roles View', results)));
-    console.log('-----------------------------');
+  connection.query(queries.selectAllRoles(), ['id', 'title', 'salary', 'name', 'emptracker_db.role', 'emptracker_db.department',
+   'department_id', 'id'], function (err, results) {
+    if (results.length > 0) {
+      if (err) throw err;
+      console.log(chalk.green(cTable.getTable('Roles View', results)));
+      console.log('-----------------------------');
     }
-    else{
+    else {
       console.log(chalk.redBright('There are no roles in the database. Please add a role.'))
     }
     startTracker();
@@ -98,16 +98,18 @@ viewAllRoles = () => {
 
 // Function to view all employees
 viewAllEmployees = () => {
-  connection.query(queries.selectAllEmployees(), function (err, results) {
-    if(results.length > 0){
+  connection.query(queries.selectAllEmployees(), ['id', 'first_name', 'last_name', 'empName', 'title', 'name', 'salary', 'first_name', 
+  'last_name', 'emptracker_db.employee', 'emptracker_db.role', 'role_id', 'id', 'emptracker_db.department', 'department_id', 'id',
+   'emptracker_db.employee', 'manager_id', 'id'], function (err, results) {
+    if (results.length > 0) {
       if (err) throw err;
-    console.log(chalk.yellowBright(cTable.getTable('Employees View', results)));
-    console.log('-----------------------------');
+      console.log(chalk.yellowBright(cTable.getTable('Employees View', results)));
+      console.log('-----------------------------');
     }
-    else{
+    else {
       console.log(chalk.redBright('There are no employees in the database. Please add an employee.'))
     }
-    
+
     startTracker();
   })
 }
@@ -219,11 +221,107 @@ addEmployee = () => {
           queries.insertEmployee(answer.firstName, answer.lastName, answer.role),
           function (err) {
             if (err) throw err;
+
             console.log(chalk.greenBright(`Employee ${answer.firstName} ${answer.lastName} added successfully!`));
             console.log('-----------------------------');
+            // addManager();
             startTracker();
           }
         );
       });
   });
 }
+
+// Function to view all of the roles
+updateEmpRole = () => {
+  connection.query(queries.selectAllEmployees(), ['id', 'first_name', 'last_name', 'empName', 'title', 'name', 'salary', 'first_name', 
+  'last_name', 'emptracker_db.employee', 'emptracker_db.role', 'role_id', 'id', 'emptracker_db.department', 'department_id', 'id',
+   'emptracker_db.employee', 'manager_id', 'id'], function (err, results) {
+    inquirer
+    .prompt([
+      {
+        name: "emp",
+        type: "list",
+        message: "Which employee's role would you like to update?",
+        choices: function () {
+          var empArray = [];
+          for (var i = 0; i < results.length; i++) {
+            empArray.push(results[i].empName );
+          }
+          return empArray;
+        }
+      }
+    ])
+    .then(function (empNameAnswer) {
+    
+  connection.query(queries.selectAllRawRoles(), ['emptracker_db.role'], function (err, results) {
+    inquirer
+    .prompt([
+      {
+        name: "role",
+        type: "list",
+        message: "What role would you like to give this employee?",
+        choices: function () {
+          var rolesArray = [];
+          for (var i = 0; i < results.length; i++) {
+            rolesArray.push(results[i].title);
+          }
+          return rolesArray;
+        }
+      }
+    ])
+    .then(function (roleTitleAnswer) {
+      console.log(roleTitleAnswer.role);
+      console.log(empNameAnswer.emp);
+      
+      connection.query(
+        queries.updateEmpRole(roleTitleAnswer.role, empNameAnswer.emp),
+        function (err) {
+          if (err) throw err;
+
+          console.log(chalk.greenBright(`${empNameAnswer.emp}'s role has been updated to ${roleTitleAnswer.role} successfully!`));
+          console.log('-----------------------------');
+          startTracker();
+        }
+      );
+    });
+  })
+    });
+
+   })
+
+}
+
+// //Function to add employee
+// addManager = () => {
+//   // query the database for all roles
+//   connection.query(queries.selectAllEmployees(), function (err, results) {
+//   inquirer
+//   .prompt([
+//     {
+//       name: "manager",
+//       type: "list",
+//       message: "Who is the employee's manager?",
+//       choices: function () {
+//         var managersArray = [];
+//         managersArray.push('None');
+
+//         for (var i = 0; i < results.length; i++) {
+//           managersArray.push(results[i].empName);
+//         }
+//         return managersArray;
+//       }
+//     }
+//   ])
+//   .then(function (answer) {
+//     connection.query(
+//       queries.updateEmpManager(answer.manager),
+//       function (err) {
+//         if (err) throw err;
+
+//         startTracker();
+//       }
+//     );
+//   });
+// });
+// }
