@@ -62,6 +62,9 @@ trackerAction = (choice) => {
   else if (choice.trackerList === 'Update an employee role') {
     updateEmpRole();
   }
+  else if (choice.trackerList === 'Delete an employee') {
+    deleteEmp();
+  }
   else if (choice.trackerList === `I'm done`) {
     console.log(chalk.bgRed('Finish!'));
     connection.end();
@@ -86,35 +89,35 @@ viewAllDepartments = () => {
 // Function to view all of the roles
 viewAllRoles = () => {
   connection.query(queries.selectAllRoles(), ['id', 'title', 'salary', 'name', 'emptracker_db.role', 'emptracker_db.department',
-   'department_id', 'id'], function (err, results) {
-    if (results.length > 0) {
-      if (err) throw err;
-      console.log(chalk.green(cTable.getTable('Roles View', results)));
-      console.log('-----------------------------');
-    }
-    else {
-      console.log(chalk.redBright('There are no roles in the database. Please add a role.'))
-    }
-    startTracker();
-  })
+    'department_id', 'id'], function (err, results) {
+      if (results.length > 0) {
+        if (err) throw err;
+        console.log(chalk.green(cTable.getTable('Roles View', results)));
+        console.log('-----------------------------');
+      }
+      else {
+        console.log(chalk.redBright('There are no roles in the database. Please add a role.'))
+      }
+      startTracker();
+    })
 }
 
 // Function to view all employees
 viewAllEmployees = () => {
-  connection.query(queries.selectAllEmployees(), ['id', 'first_name', 'last_name', 'empName', 'title', 'name', 'salary', 'first_name', 
-  'last_name', 'emptracker_db.employee', 'emptracker_db.role', 'role_id', 'id', 'emptracker_db.department', 'department_id', 'id',
-   'emptracker_db.employee', 'manager_id', 'id'], function (err, results) {
-    if (results.length > 0) {
-      if (err) throw err;
-      console.log(chalk.yellowBright(cTable.getTable('Employees View', results)));
-      console.log('-----------------------------');
-    }
-    else {
-      console.log(chalk.redBright('There are no employees in the database. Please add an employee.'))
-    }
+  connection.query(queries.selectAllEmployees(), ['id', 'first_name', 'last_name', 'empName', 'title', 'name', 'salary', 'first_name',
+    'last_name', 'emptracker_db.employee', 'emptracker_db.role', 'role_id', 'id', 'emptracker_db.department', 'department_id', 'id',
+    'emptracker_db.employee', 'manager_id', 'id'], function (err, results) {
+      if (results.length > 0) {
+        if (err) throw err;
+        console.log(chalk.yellowBright(cTable.getTable('Employees View', results)));
+        console.log('-----------------------------');
+      }
+      else {
+        console.log(chalk.redBright('There are no employees in the database. Please add an employee.'))
+      }
 
-    startTracker();
-  })
+      startTracker();
+    })
 }
 
 // Function to add a department
@@ -194,138 +197,136 @@ addRole = () => {
 addEmployee = () => {
   // query the database for all roles
   connection.query(queries.selectAllRoles(), ['id', 'title', 'salary', 'name', 'emptracker_db.role', 'emptracker_db.department',
-  'department_id', 'id'], function (err, results) {
-    inquirer
-      .prompt([
-        {
-          name: "firstName",
-          type: "input",
-          message: "What is the employee's first name?"
-        },
-        {
-          name: "lastName",
-          type: "input",
-          message: "What is the employee's last name?"
-        },
-        {
-          name: "role",
-          type: "list",
-          message: "What is the employee's role",
-          choices: function () {
-            var rolesArray = [];
-            for (var i = 0; i < results.length; i++) {
-              rolesArray.push(results[i].title);
+    'department_id', 'id'], function (err, results) {
+      inquirer
+        .prompt([
+          {
+            name: "firstName",
+            type: "input",
+            message: "What is the employee's first name?"
+          },
+          {
+            name: "lastName",
+            type: "input",
+            message: "What is the employee's last name?"
+          },
+          {
+            name: "role",
+            type: "list",
+            message: "What is the employee's role",
+            choices: function () {
+              var rolesArray = [];
+              for (var i = 0; i < results.length; i++) {
+                rolesArray.push(results[i].title);
+              }
+              return rolesArray;
             }
-            return rolesArray;
           }
-        }
-      ])
-      .then(function (answer) {
-        connection.query(
-          queries.insertEmployee(answer.firstName, answer.lastName, answer.role),
-          function (err) {
-            if (err) throw err;
+        ])
+        .then(function (answer) {
+          connection.query(
+            queries.insertEmployee(answer.firstName, answer.lastName, answer.role),
+            function (err) {
+              if (err) throw err;
 
-            console.log(chalk.greenBright(`Employee ${answer.firstName} ${answer.lastName} added successfully!`));
-            console.log('-----------------------------');
-            // addManager();
-            startTracker();
-          }
-        );
-      });
-  });
+              console.log(chalk.greenBright(`Employee ${answer.firstName} ${answer.lastName} added successfully!`));
+              console.log('-----------------------------');
+              // addManager();
+              startTracker();
+            }
+          );
+        });
+    });
 }
 
 // Function to view all of the roles
 updateEmpRole = () => {
-  connection.query(queries.selectAllEmployees(), ['id', 'first_name', 'last_name', 'empName', 'title', 'name', 'salary', 'first_name', 
-  'last_name', 'emptracker_db.employee', 'emptracker_db.role', 'role_id', 'id', 'emptracker_db.department', 'department_id', 'id',
-   'emptracker_db.employee', 'manager_id', 'id'], function (err, results) {
-    inquirer
-    .prompt([
-      {
-        name: "emp",
-        type: "list",
-        message: "Which employee's role would you like to update?",
-        choices: function () {
-          var empArray = [];
-          for (var i = 0; i < results.length; i++) {
-            empArray.push(results[i].empName );
+  connection.query(queries.selectAllEmployees(), ['id', 'first_name', 'last_name', 'empName', 'title', 'name', 'salary', 'first_name',
+    'last_name', 'emptracker_db.employee', 'emptracker_db.role', 'role_id', 'id', 'emptracker_db.department', 'department_id', 'id',
+    'emptracker_db.employee', 'manager_id', 'id'], function (err, results) {
+      inquirer
+        .prompt([
+          {
+            name: "emp",
+            type: "list",
+            message: "Which employee's role would you like to update?",
+            choices: function () {
+              var empArray = [];
+              for (var i = 0; i < results.length; i++) {
+                empArray.push(results[i].empName);
+              }
+              return empArray;
+            }
           }
-          return empArray;
-        }
-      }
-    ])
-    .then(function (empNameAnswer) {
-    
-  connection.query(queries.selectAllRawRoles(), ['emptracker_db.role'], function (err, results) {
-    inquirer
-    .prompt([
-      {
-        name: "role",
-        type: "list",
-        message: "What role would you like to give this employee?",
-        choices: function () {
-          var rolesArray = [];
-          for (var i = 0; i < results.length; i++) {
-            rolesArray.push(results[i].title);
-          }
-          return rolesArray;
-        }
-      }
-    ])
-    .then(function (roleTitleAnswer) {
-      console.log(roleTitleAnswer.role);
-      console.log(empNameAnswer.emp);
-      
-      connection.query(
-        queries.updateEmpRole(roleTitleAnswer.role, empNameAnswer.emp),
-        function (err) {
-          if (err) throw err;
+        ])
+        .then(function (empNameAnswer) {
 
-          console.log(chalk.greenBright(`${empNameAnswer.emp}'s role has been updated to ${roleTitleAnswer.role} successfully!`));
-          console.log('-----------------------------');
-          startTracker();
-        }
-      );
-    });
-  })
-    });
+          connection.query(queries.selectAllRawRoles(), ['emptracker_db.role'], function (err, results) {
+            inquirer
+              .prompt([
+                {
+                  name: "role",
+                  type: "list",
+                  message: "What role would you like to give this employee?",
+                  choices: function () {
+                    var rolesArray = [];
+                    for (var i = 0; i < results.length; i++) {
+                      rolesArray.push(results[i].title);
+                    }
+                    return rolesArray;
+                  }
+                }
+              ])
+              .then(function (roleTitleAnswer) {
+                connection.query(
+                  queries.updateEmpRole(roleTitleAnswer.role, empNameAnswer.emp),
+                  function (err) {
+                    if (err) throw err;
 
-   })
-
+                    console.log(chalk.greenBright(`${empNameAnswer.emp}'s role has been updated to ${roleTitleAnswer.role} successfully!`));
+                    console.log('-----------------------------');
+                    startTracker();
+                  }
+                );
+              });
+          })
+        });
+    })
 }
 
-// //Function to add employee
-// addManager = () => {
-//   // query the database for all roles
-//   connection.query(queries.selectAllEmployees(), function (err, results) {
-//   inquirer
-//   .prompt([
-//     {
-//       name: "manager",
-//       type: "list",
-//       message: "Who is the employee's manager?",
-//       choices: function () {
-//         var managersArray = [];
-//         managersArray.push('None');
+// Function to delete an employee
+deleteEmp = () => {
+  connection.query(queries.selectAllEmployees(), ['id', 'first_name', 'last_name', 'empName', 'title', 'name', 'salary', 'first_name',
+    'last_name', 'emptracker_db.employee', 'emptracker_db.role', 'role_id', 'id', 'emptracker_db.department', 'department_id', 'id',
+    'emptracker_db.employee', 'manager_id', 'id'], function (err, results) {
+      inquirer
+        .prompt([
+          {
+            name: "emp",
+            type: "list",
+            message: "Which employee record would you like to delete?",
+            choices: function () {
+              var empArray = [];
+              for (var i = 0; i < results.length; i++) {
+                empArray.push(results[i].empName);
+              }
+              return empArray;
+            }
+          }
+        ])
+        .then(function (empNameAnswer) {
+          connection.query(
+            queries.deleteEmployee(empNameAnswer.emp),
+            function (err) {
+              if (err) throw err;
 
-//         for (var i = 0; i < results.length; i++) {
-//           managersArray.push(results[i].empName);
-//         }
-//         return managersArray;
-//       }
-//     }
-//   ])
-//   .then(function (answer) {
-//     connection.query(
-//       queries.updateEmpManager(answer.manager),
-//       function (err) {
-//         if (err) throw err;
+              console.log(chalk.greenBright(`${empNameAnswer.emp} has been deleted.`));
+              console.log('-----------------------------');
+              startTracker();
+            }
+          );
+        });
+    })
+}
 
-//         startTracker();
-//       }
-//     );
-//   });
-// });
-// }
+

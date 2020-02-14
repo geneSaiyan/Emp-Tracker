@@ -82,6 +82,15 @@ updateEmpRole = (roleTitle, empName) => {
     `
 }
 
+
+
+deleteEmployee = (empName) => {
+    return `
+    DELETE from emptracker_db.employee where CONCAT(first_name, ' ', last_name) = '${empName}'
+    `
+}
+
+
 module.exports = { selectAllDepts, selectAllRoles, selectAllEmployees, insertDepartment, insertRole,
-     insertEmployee, updateEmpManager, selectAllRawRoles, updateEmpRole };
+     insertEmployee, updateEmpManager, selectAllRawRoles, updateEmpRole, deleteEmployee };
 
