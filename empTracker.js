@@ -6,6 +6,9 @@ const chalk = require('chalk');
 const trackerOptions = require('./assets/trackerOptions');
 var queries = require('./assets/queries');
 
+//Gets rid of the too many listeners warning
+require('events').EventEmitter.defaultMaxListeners = 300;
+
 //Create the connection information for the sql database
 var connection = mysql.createConnection({
   host: "localhost",
