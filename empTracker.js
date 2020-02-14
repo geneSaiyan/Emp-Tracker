@@ -140,7 +140,7 @@ addDepartment = () => {
 // Function to add a role
 addRole = () => {
   // query the database for all departments
-  connection.query(queries.selectAllDepts(), function (err, results) {
+  connection.query(queries.selectAllDepts(), ['emptracker_db.department'], function (err, results) {
     inquirer
       .prompt([
         {
