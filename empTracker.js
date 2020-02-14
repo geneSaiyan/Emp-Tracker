@@ -190,7 +190,8 @@ addRole = () => {
 //Function to add employee
 addEmployee = () => {
   // query the database for all roles
-  connection.query(queries.selectAllRoles(), function (err, results) {
+  connection.query(queries.selectAllRoles(), ['id', 'title', 'salary', 'name', 'emptracker_db.role', 'emptracker_db.department',
+  'department_id', 'id'], function (err, results) {
     inquirer
       .prompt([
         {
